@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: "Kumbh Sans";
+    font-weight: 700;
+    src: url(/fonts/KumbhSans-Bold.ttf) format("ttf");
+  }
+  @font-face {
+    font-family: "Roboto Slab";
+    font-weight: 700;
+    src: url(/fonts/RobotoSlab-Bold.ttf) format("ttf");
+  }
+  @font-face {
+    font-family: "Space Mono";
+    font-weight: 400;
+    src: url(/fonts/SpaceMono-Regular.ttf) format("ttf");
+  }
+  @font-face {
+    font-family: "Space Mono";
+    font-weight: 700;
+    src: url(/fonts/SpaceMono-Bold.ttf) format("ttf");
+  }
+  body {
+    @apply bg-darkestblue;
+  }
+  h1,
+  h2,
+  h4,
+  p,
+  button {
+    @apply text-lightblue;
+  }
+  aside h1,
+  aside h2 {
+    @apply text-darkestblue;
+  }
+}

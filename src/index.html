@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css" />
+    <!-- There is no ESM module for alpinejs yet, promised to be released in v3 -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+  </head>
+  <body>
+    <article x-data="app()" class="px-2 py-8 flex flex-col justify-between h-screen">
+      <div>
+        <h1 class="font-bold font-kumbh text-center text-logo">pomodoro</h1>
+        <div class="grid grid-rows-1 grid-cols-3 gap-2 max-w-sm mx-auto shadow-sm p-2 my-10 bg-darkblue rounded-3xl">
+          <template x-for="action in actions" :key="action">
+            <button
+              type="button"
+              class="py-2 rounded-full font-bold text-sm focus:outline-none focus:ring-4 focus:ring-lightblue focus:ring-opacity-25 transition-colors duration-350 ease-in-out"
+              x-text="action"
+              x-bind:class="{
+                'text-darkestblue': activeAction === action,
+                'text-white': activeAction !== action,
+                'bg-red': settings.color === RED && activeAction === action,
+                'bg-cyan': settings.color === CYAN && activeAction === action,
+                'bg-violet': settings.color === VELVET && activeAction === action,
+                'font-kumbh': settings.font === KUMBH_SANS,
+                'font-roboto': settings.font === ROBOTO_SERIF,
+                'font-space-mono': settings.font === SPACE_MONO,
+              }"
+              x-on:click="setAction(action)"
+            ></button>
+          </template>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="block mx-auto relative bg-darkestblue rounded-full w-96 h-96 focus:outline-none focus:ring-4 focus:ring-red focus:ring-opacity-25 shadow-lightwithinset hover:shadow-light active:shadow-lightwithinset transition-shadow duration-150 ease-in-out"
+        x-on:click="runningTimer ? pause() : start()"
+      >
+        <div
+          x-bind:class="{
+            'font-kumbh font-bold': settings.font === KUMBH_SANS,
+            'font-roboto font-bold': settings.font === ROBOTO_SERIF,
+            'font-space-mono tracking-tightest': settings.font === SPACE_MONO,
+          }"
+          class="text-time"
+          x-text="secondsToMinutes(duration)"
+        ></div>
+        <svg
+          x-bind:class="{
+            'text-red': settings.color === RED,
+            'text-cyan': settings.color === CYAN,
+            'text-violet': settings.color === VELVET,
+          }"
+          class="absolute top-0 stroke-current text-red"
+          id="time-progress"
+          viewbox="0 0 100 100"
+        >
+          <path
+            id="progress"
+            stroke-linecap="round"
+            stroke-width="3"
+            fill="none"
+            x-bind:stroke-dasharray="getProgress(duration, settings.durations[activeAction]) + ',251.2'"
+            d="M50 10 a 40 40 0 0 1 0 80 a 40 40 0 0 1 0 -80"
+          ></path>
+        </svg>
+        <div
+          x-bind:class="{
+          'font-kumbh': settings.font === KUMBH_SANS,
+          'font-roboto': settings.font === ROBOTO_SERIF,
+          'font-space-mono': settings.font === SPACE_MONO,
+        }"
+          class="font-bold uppercase absolute bottom-28 w-96 flex place-content-around px-20"
+        >
+          <template x-for="char in (runningTimer ? 'PAUSE' : 'START').split('')">
+            <span x-text="char"></span>
+          </template>
+        </div>
+      </button>
+      <button
+        type="button"
+        x-on:click="settings.open = true"
+        class="mx-auto p-2 hover:bg-darkestblue rounded-full focus:outline-none focus:ring-4 focus:ring-red focus:ring-opacity-25"
+      >
+        <svg
+          class="fill-current text-gray hover:text-lightblue transition-colors duration-200 ease-in-out"
+          xmlns="http://www.w3.org/2000/svg"
+          enable-background="new 0 0 24 24"
+          height="24"
+          viewBox="0 0 24 24"
+          width="24"
+        >
+          <g>
+            <path d="M0,0h24v24H0V0z" fill="none" />
+            <path
+              d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"
+            />
+          </g>
+        </svg>
+      </button>
+
+      <!-- Settings Modal -->
+      <aside x-show="settings.open" class="fixed w-full h-full flex items-center justify-center top-0 left-0">
+        <!-- Background transparent overlay -->
+        <div class="overflow-y-visible overflow-x-hidden absolute w-full h-full bg-darkestblue opacity-50"></div>
+        <!-- Modal body -->
+        <div class="bg-white w-11/12 md:max-w-md mx-auto rounded-xl shadow-lg z-50 p-8 pb-4">
+          <header class="flex justify-between border-b pb-4 border-gray">
+            <h1 class="text-xl font-bold">Settings</h1>
+            <button type="button" x-on:click="settings.open = false">
+              <svg
+                class="fill-current text-gray hover:text-darkblue"
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+              >
+                <path
+                  d="M11.95.636l1.414 1.414L8.414 7l4.95 4.95-1.414 1.414L7 8.414l-4.95 4.95L.636 11.95 5.586 7 .636 2.05 2.05.636 7 5.586l4.95-4.95z"
+                />
+              </svg>
+            </button>
+          </header>
+          <form action="" class="divide-y divide-gray">
+            <div>
+              <h2 class="uppercase tracking-widest font-bold text-sm py-2">Time (minutes)</h2>
+              <div class="flex gap-4 justify-between items-center py-4">
+                <div>
+                  <label class="text-xs text-gray" for="pomodoro">pomodoro</label>
+                  <input
+                    x-model.number="settings.durations[POMODORO]"
+                    min="1"
+                    max="60"
+                    class="bg-gray rounded-xl w-full h-10 p-2 font-bold"
+                    type="number"
+                    name="pomodoro"
+                  />
+                </div>
+                <div>
+                  <label class="text-xs text-gray" for="short">short break</label>
+                  <input
+                    x-model.number="settings.durations[SHORT_BREAK]"
+                    min="1"
+                    max="60"
+                    class="bg-gray rounded-xl w-full h-10 p-2 font-bold"
+                    type="number"
+                    name="short"
+                  />
+                </div>
+                <div>
+                  <label class="text-xs text-gray" for="long">long break</label>
+                  <input
+                    x-model.number="settings.durations[LONG_BREAK]"
+                    min="1"
+                    max="60"
+                    class="bg-gray rounded-xl w-full h-10 p-2 font-bold"
+                    type="number"
+                    name="long"
+                  />
+                </div>
+              </div>
+              <p x-show="Object.values(settings.durations).some(v => v < 1 || v > 60)" class="text-red text-sm pb-3">
+                Please choose between 1 to 60 minutes!
+              </p>
+            </div>
+            <div class="flex justify-between items-center py-4">
+              <h2 class="uppercase tracking-widest font-bold text-sm py-4">Font</h2>
+              <div class="flex gap-4">
+                <template x-for="font in fonts">
+                  <button
+                    x-on:click="settings.font = font"
+                    x-bind:class="{
+                      'bg-darkestblue text-white': settings.font === font,
+                      'bg-gray text-darkblue': settings.font !== font,
+                      'font-kumbh': settings.font === KUMBH_SANS,
+                      'font-roboto': settings.font === ROBOTO_SERIF,
+                      'font-space-mono': settings.font === SPACE_MONO,
+                    }"
+                    class="w-8 h-8 rounded-full text-sm"
+                    type="button"
+                  >
+                    Aa
+                  </button>
+                </template>
+              </div>
+            </div>
+            <div class="flex justify-between py-4">
+              <h2 class="uppercase tracking-widest font-bold text-sm py-4">Color</h2>
+              <div class="flex gap-4">
+                <template x-for="color in colors" :key="color">
+                  <button
+                    x-on:click="settings.color = color"
+                    x-bind:class="{
+                      'bg-red': color === RED,
+                      'bg-cyan': color === CYAN,
+                      'bg-violet': color === VELVET,
+                    }"
+                    class="w-8 h-8 rounded-full flex justify-center items-center ring-0 ring-gray ring-offset-2 hover:ring-2"
+                    type="button"
+                  >
+                    <svg
+                      x-show="color === settings.color"
+                      class="stroke-current text-darkestblue"
+                      width="15"
+                      height="11"
+                      viewBox="0 0 15 11"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M1 5.5L4.95263 9.45263L13.4053 1" stroke-width="2" />
+                    </svg>
+                  </button>
+                </template>
+              </div>
+            </div>
+          </form>
+          <footer class="text-center -mb-8">
+            <button class="bg-red text-white rounded-full px-8 py-2" type="button">Apply</button>
+          </footer>
+        </div>
+      </aside>
+    </article>
+
+    <script src="./index.js"></script>
+  </body>
+</html>

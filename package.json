@@ -1,0 +1,44 @@
+{
+  "name": "pomodoro-tailwind-alpine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pomodoro timer built with tailwind and alpinejs",
+  "scripts": {
+    "dev": "snowpack dev",
+    "build": "snowpack build",
+    "format": "prettier --write package.json README.md src/**/*.{js,html,css}"
+  },
+  "keywords": [
+    "pomodoro",
+    "alpinejs",
+    "tailwindcss"
+  ],
+  "author": {
+    "name": "Anton Alekseev",
+    "email": "hi@aalekseev.me",
+    "url": "https://aalekseev.me"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "license": "ISC",
+  "prettier": {
+    "printWidth": 120
+  },
+  "devDependencies": {
+    "@snowpack/plugin-postcss": "^1.0.11",
+    "autoprefixer": "^10.1.0",
+    "husky": "^4.3.6",
+    "postcss": "^8.2.1",
+    "postcss-cli": "^8.3.1",
+    "prettier": "^2.2.1",
+    "pretty-quick": "^3.1.0",
+    "snowpack": "^2.18.5"
+  },
+  "dependencies": {
+    "alpinejs": "^2.8.0",
+    "tailwindcss": "^2.0.2"
+  }
+}
