@@ -4,13 +4,13 @@ const POMODORO = "pomodoro";
 const SHORT_BREAK = "short break";
 const LONG_BREAK = "long break";
 // Fonts
-const KUMBH_SANS = "Kumbh Sans";
-const ROBOTO_SERIF = "Roboto Slab";
-const SPACE_MONO = "Space Mono";
+const KUMBH_SANS = "kumbh-sans";
+const ROBOTO_SERIF = "roboto-slab";
+const SPACE_MONO = "space-mono";
 // Colors
 const RED = "red";
 const CYAN = "cyan";
-const VELVET = "velvet";
+const VIOLET = "violet";
 
 // In minutes
 const DEFAULT_DURATIONS = {
@@ -21,7 +21,7 @@ const DEFAULT_DURATIONS = {
 
 const app = () => ({
   actions: [POMODORO, SHORT_BREAK, LONG_BREAK],
-  colors: [RED, CYAN, VELVET],
+  colors: [RED, CYAN, VIOLET],
   fonts: [KUMBH_SANS, ROBOTO_SERIF, SPACE_MONO],
 
   activeAction: POMODORO,
@@ -32,6 +32,7 @@ const app = () => ({
     this.runningTimer = setInterval(() => {
       if (this.duration <= 0) {
         this.reset();
+        return;
       }
       this.duration -= 1;
     }, 1000);
@@ -74,9 +75,19 @@ const minutesToSeconds = (minutes) => {
   return minutes * 60;
 };
 
-// I hate math :(
-const getProgress = (currentDuration, fullDuration) => {
-  const fullCircle = 251;
-  const divider = minutesToSeconds(fullDuration) / fullCircle;
-  return currentDuration / divider;
+// I hate calculating percentages so much
+const durationToPercents = (currentDuration, fullDuration) => {
+  const fullDurationSeconds = minutesToSeconds(fullDuration);
+  const singlePercent = fullDurationSeconds / 100;
+  const durationDifference = fullDurationSeconds - currentDuration;
+  // Subtracting from 100% to get reversed percentage
+  console.log(
+    fullDuration,
+    fullDurationSeconds,
+    currentDuration,
+    singlePercent,
+    durationDifference,
+    durationDifference / singlePercent
+  );
+  return 100 - durationDifference / singlePercent;
 };

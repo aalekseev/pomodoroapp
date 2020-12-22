@@ -8,23 +8,31 @@
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
   </head>
   <body>
-    <article x-data="app()" class="px-2 py-8 flex flex-col justify-between h-screen">
+    <article
+      x-data="app()"
+      x-on:keydown.escape="settings.open = false"
+      class="flex flex-col justify-between h-screen p-2 sm:py-8"
+    >
       <div>
-        <h1 class="font-bold font-kumbh text-center text-logo">pomodoro</h1>
-        <div class="grid grid-rows-1 grid-cols-3 gap-2 max-w-sm mx-auto shadow-sm p-2 my-10 bg-darkblue rounded-3xl">
+        <h1 class="font-bold text-center font-kumbh text-logo">pomodoro</h1>
+        <div
+          class="grid max-w-sm grid-cols-3 grid-rows-1 gap-2 p-2 mx-auto my-4 shadow-sm sm:my-10 bg-darkblue rounded-3xl"
+          data-qa="actions-wrapper"
+        >
           <template x-for="action in actions" :key="action">
             <button
               type="button"
-              class="py-2 rounded-full font-bold text-sm focus:outline-none focus:ring-4 focus:ring-lightblue focus:ring-opacity-25 transition-colors duration-350 ease-in-out"
+              class="py-2 text-sm font-bold transition-colors ease-in-out rounded-full focus:outline-none focus:ring-4 focus:ring-lightblue focus:ring-opacity-25 duration-350"
+              x-bind:data-qa="'action-' + action.replaceAll(' ', '-')"
               x-text="action"
               x-bind:class="{
                 'text-darkestblue': activeAction === action,
                 'text-white': activeAction !== action,
                 'bg-red': settings.color === RED && activeAction === action,
                 'bg-cyan': settings.color === CYAN && activeAction === action,
-                'bg-violet': settings.color === VELVET && activeAction === action,
-                'font-kumbh': settings.font === KUMBH_SANS,
-                'font-roboto': settings.font === ROBOTO_SERIF,
+                'bg-violet': settings.color === VIOLET && activeAction === action,
+                'font-kumbh-sans': settings.font === KUMBH_SANS,
+                'font-roboto-slab': settings.font === ROBOTO_SERIF,
                 'font-space-mono': settings.font === SPACE_MONO,
               }"
               x-on:click="setAction(action)"
@@ -34,57 +42,70 @@
       </div>
       <button
         type="button"
-        class="block mx-auto relative bg-darkestblue rounded-full w-96 h-96 focus:outline-none focus:ring-4 focus:ring-red focus:ring-opacity-25 shadow-lightwithinset hover:shadow-light active:shadow-lightwithinset transition-shadow duration-150 ease-in-out"
+        data-qa="timer-btn"
+        class="relative flex flex-shrink-0 mx-auto transition-shadow duration-150 ease-in-out rounded-full bg-darkestblue sm:w-96 sm:h-96 w-72 h-72 focus:outline-none focus:ring-4 focus:ring-red focus:ring-opacity-25 shadow-lightwithinset hover:shadow-light active:shadow-lightwithinset"
         x-on:click="runningTimer ? pause() : start()"
+        x-on:keydown.enter="runningTimer ? pause() : start()"
       >
-        <div
-          x-bind:class="{
-            'font-kumbh font-bold': settings.font === KUMBH_SANS,
-            'font-roboto font-bold': settings.font === ROBOTO_SERIF,
-            'font-space-mono tracking-tightest': settings.font === SPACE_MONO,
-          }"
-          class="text-time"
-          x-text="secondsToMinutes(duration)"
-        ></div>
-        <svg
-          x-bind:class="{
-            'text-red': settings.color === RED,
-            'text-cyan': settings.color === CYAN,
-            'text-violet': settings.color === VELVET,
-          }"
-          class="absolute top-0 stroke-current text-red"
-          id="time-progress"
-          viewbox="0 0 100 100"
-        >
-          <path
+        <svg id="time-progress" viewbox="0 0 100 100" class="absolute top-0">
+          <circle class="fill-current text-darkestblue" cx="50" cy="50" r="48" />
+          <circle
             id="progress"
+            data-qa="progress"
+            class="duration-500 ease-linear origin-center transform -rotate-90 stroke-current transition-stroke-dashoffset"
+            fill="none"
+            x-bind:class="{
+              'text-red': settings.color === RED,
+              'text-cyan': settings.color === CYAN,
+              'text-violet': settings.color === VIOLET,
+            }"
+            cx="50"
+            cy="50"
+            r="44"
             stroke-linecap="round"
             stroke-width="3"
-            fill="none"
-            x-bind:stroke-dasharray="getProgress(duration, settings.durations[activeAction]) + ',251.2'"
-            d="M50 10 a 40 40 0 0 1 0 80 a 40 40 0 0 1 0 -80"
-          ></path>
+            stroke-dasharray="276.5 276.5"
+            x-bind:stroke-dashoffset="276.5 - durationToPercents(duration, settings.durations[activeAction]) / 100 * 276.5"
+          />
+          <text
+            data-qa="time"
+            class="fill-current text-lighblue"
+            x-bind:class="{
+              'font-kumbh-sans font-bold': settings.font === KUMBH_SANS,
+              'font-roboto-slab font-bold': settings.font === ROBOTO_SERIF,
+              'font-space-mono tracking-tightest': settings.font === SPACE_MONO,
+            }"
+            x="50%"
+            y="50%"
+            dy=".3em"
+            font-size="150%"
+            text-anchor="middle"
+            x-text="secondsToMinutes(duration)"
+          ></text>
+          <text
+            data-qa="timer-state"
+            x-bind:class="{
+              'font-kumbh-sans': settings.font === KUMBH_SANS,
+              'font-roboto-slab': settings.font === ROBOTO_SERIF,
+              'font-space-mono': settings.font === SPACE_MONO,
+            }"
+            class="font-bold tracking-widest uppercase fill-current text-lighblue"
+            x="50%"
+            y="70%"
+            font-size="30%"
+            text-anchor="middle"
+            x-text="runningTimer ? 'PAUSE' : 'START'"
+          ></text>
         </svg>
-        <div
-          x-bind:class="{
-          'font-kumbh': settings.font === KUMBH_SANS,
-          'font-roboto': settings.font === ROBOTO_SERIF,
-          'font-space-mono': settings.font === SPACE_MONO,
-        }"
-          class="font-bold uppercase absolute bottom-28 w-96 flex place-content-around px-20"
-        >
-          <template x-for="char in (runningTimer ? 'PAUSE' : 'START').split('')">
-            <span x-text="char"></span>
-          </template>
-        </div>
       </button>
       <button
+        data-qa="open-settings-btn"
         type="button"
         x-on:click="settings.open = true"
-        class="mx-auto p-2 hover:bg-darkestblue rounded-full focus:outline-none focus:ring-4 focus:ring-red focus:ring-opacity-25"
+        class="p-2 mx-auto rounded-full hover:bg-darkestblue focus:outline-none focus:ring-4 focus:ring-red focus:ring-opacity-25"
       >
         <svg
-          class="fill-current text-gray hover:text-lightblue transition-colors duration-200 ease-in-out"
+          class="transition-colors duration-200 ease-in-out fill-current text-gray hover:text-lightblue"
           xmlns="http://www.w3.org/2000/svg"
           enable-background="new 0 0 24 24"
           height="24"
@@ -101,14 +122,18 @@
       </button>
 
       <!-- Settings Modal -->
-      <aside x-show="settings.open" class="fixed w-full h-full flex items-center justify-center top-0 left-0">
+      <aside x-show="settings.open" class="fixed top-0 left-0 flex items-center justify-center w-full h-full">
         <!-- Background transparent overlay -->
-        <div class="overflow-y-visible overflow-x-hidden absolute w-full h-full bg-darkestblue opacity-50"></div>
+        <div class="absolute w-full h-full overflow-x-hidden overflow-y-visible opacity-50 bg-darkestblue"></div>
         <!-- Modal body -->
-        <div class="bg-white w-11/12 md:max-w-md mx-auto rounded-xl shadow-lg z-50 p-8 pb-4">
-          <header class="flex justify-between border-b pb-4 border-gray">
+        <div
+          x-on:click.away="settings.open = false"
+          data-qa="settings-modal"
+          class="z-50 w-11/12 p-8 pb-4 mx-auto bg-white shadow-lg md:max-w-md rounded-xl"
+        >
+          <header class="flex justify-between pb-4 border-b border-gray">
             <h1 class="text-xl font-bold">Settings</h1>
-            <button type="button" x-on:click="settings.open = false">
+            <button data-qa="close-settings-btn" type="button" x-on:click="settings.open = false">
               <svg
                 class="fill-current text-gray hover:text-darkblue"
                 xmlns="http://www.w3.org/2000/svg"
@@ -123,60 +148,43 @@
           </header>
           <form action="" class="divide-y divide-gray">
             <div>
-              <h2 class="uppercase tracking-widest font-bold text-sm py-2">Time (minutes)</h2>
-              <div class="flex gap-4 justify-between items-center py-4">
-                <div>
-                  <label class="text-xs text-gray" for="pomodoro">pomodoro</label>
-                  <input
-                    x-model.number="settings.durations[POMODORO]"
-                    min="1"
-                    max="60"
-                    class="bg-gray rounded-xl w-full h-10 p-2 font-bold"
-                    type="number"
-                    name="pomodoro"
-                  />
-                </div>
-                <div>
-                  <label class="text-xs text-gray" for="short">short break</label>
-                  <input
-                    x-model.number="settings.durations[SHORT_BREAK]"
-                    min="1"
-                    max="60"
-                    class="bg-gray rounded-xl w-full h-10 p-2 font-bold"
-                    type="number"
-                    name="short"
-                  />
-                </div>
-                <div>
-                  <label class="text-xs text-gray" for="long">long break</label>
-                  <input
-                    x-model.number="settings.durations[LONG_BREAK]"
-                    min="1"
-                    max="60"
-                    class="bg-gray rounded-xl w-full h-10 p-2 font-bold"
-                    type="number"
-                    name="long"
-                  />
-                </div>
+              <h2 class="py-2 text-sm font-bold tracking-wide uppercase">Time (minutes)</h2>
+              <div class="flex items-center justify-between gap-4 py-4">
+                <template x-for="action in actions" :key="action">
+                  <div>
+                    <label class="text-xs text-gray" x-bind:for="action.replace(' ', '-')" x-text="action"></label>
+                    <input
+                      x-on:input.debounce.150="reset()"
+                      x-bind:data-qa="action.replace(' ', '-') + '-input'"
+                      x-model.number="settings.durations[action]"
+                      min="1"
+                      max="60"
+                      class="w-full h-10 p-2 font-bold bg-gray rounded-xl"
+                      type="number"
+                      x-bind:name="action.replace(' ', '-')"
+                    />
+                  </div>
+                </template>
               </div>
-              <p x-show="Object.values(settings.durations).some(v => v < 1 || v > 60)" class="text-red text-sm pb-3">
+              <p x-show="Object.values(settings.durations).some(v => v < 1 || v > 60)" class="pb-3 text-sm text-red">
                 Please choose between 1 to 60 minutes!
               </p>
             </div>
-            <div class="flex justify-between items-center py-4">
-              <h2 class="uppercase tracking-widest font-bold text-sm py-4">Font</h2>
+            <div class="flex items-center justify-between py-4">
+              <h2 class="py-4 text-sm font-bold tracking-wide uppercase">Font</h2>
               <div class="flex gap-4">
                 <template x-for="font in fonts">
                   <button
+                    x-bind:data-qa="'font-' + font + '-btn'"
                     x-on:click="settings.font = font"
                     x-bind:class="{
                       'bg-darkestblue text-white': settings.font === font,
                       'bg-gray text-darkblue': settings.font !== font,
-                      'font-kumbh': settings.font === KUMBH_SANS,
-                      'font-roboto': settings.font === ROBOTO_SERIF,
+                      'font-kumbh-sans': settings.font === KUMBH_SANS,
+                      'font-roboto-slab': settings.font === ROBOTO_SERIF,
                       'font-space-mono': settings.font === SPACE_MONO,
                     }"
-                    class="w-8 h-8 rounded-full text-sm"
+                    class="w-8 h-8 text-sm rounded-full"
                     type="button"
                   >
                     Aa
@@ -185,17 +193,18 @@
               </div>
             </div>
             <div class="flex justify-between py-4">
-              <h2 class="uppercase tracking-widest font-bold text-sm py-4">Color</h2>
+              <h2 class="py-4 text-sm font-bold tracking-wide uppercase">Color</h2>
               <div class="flex gap-4">
                 <template x-for="color in colors" :key="color">
                   <button
+                    x-bind:data-qa="'color-' + color + '-btn'"
                     x-on:click="settings.color = color"
                     x-bind:class="{
                       'bg-red': color === RED,
                       'bg-cyan': color === CYAN,
-                      'bg-violet': color === VELVET,
+                      'bg-violet': color === VIOLET,
                     }"
-                    class="w-8 h-8 rounded-full flex justify-center items-center ring-0 ring-gray ring-offset-2 hover:ring-2"
+                    class="flex items-center justify-center w-8 h-8 rounded-full ring-0 ring-gray ring-offset-2 hover:ring-2"
                     type="button"
                   >
                     <svg
@@ -214,8 +223,8 @@
               </div>
             </div>
           </form>
-          <footer class="text-center -mb-8">
-            <button class="bg-red text-white rounded-full px-8 py-2" type="button">Apply</button>
+          <footer class="-mb-8 text-center">
+            <button class="px-8 py-2 text-white rounded-full bg-red" type="button">Apply</button>
           </footer>
         </div>
       </aside>
