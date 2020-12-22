@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "snowpack dev",
     "build": "snowpack build",
-    "format": "prettier --write package.json README.md src/**/*.{js,html,css}"
+    "test": "cypress run",
+    "cy:open": "cypress open",
+    "format": "prettier --write package.json README.md src/**/*.{js,html,css} cypress/*"
   },
   "keywords": [
     "pomodoro",
@@ -30,6 +32,7 @@
   "devDependencies": {
     "@snowpack/plugin-postcss": "^1.0.11",
     "autoprefixer": "^10.1.0",
+    "cypress": "^6.2.0",
     "husky": "^4.3.6",
     "postcss": "^8.2.1",
     "postcss-cli": "^8.3.1",

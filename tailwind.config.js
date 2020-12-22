@@ -14,20 +14,23 @@ module.exports = {
       violet: "#D881F8",
       cyan: "#70F3F8",
       red: "#F87070",
-      lightred: "rgba(248,112,112,0.2)",
     },
     extend: {
+      transitionProperty: {
+        "stroke-dashoffset": "stroke-dashoffset",
+      },
       letterSpacing: {
-        tightest: "-10px",
+        tightest: "-0.05em",
+        widest: "1.4em",
       },
       fontFamily: {
-        kumbh: ["Kumbh Sans", ...defaultTheme.fontFamily.sans],
-        roboto: ["Roboto Slab", ...defaultTheme.fontFamily.serif],
+        "kumbh-sans": ["Kumbh Sans", ...defaultTheme.fontFamily.sans],
+        "roboto-slab": ["Roboto Slab", ...defaultTheme.fontFamily.serif],
         "space-mono": ["Space Mono", ...defaultTheme.fontFamily.mono],
       },
       fontSize: {
-        logo: "2rem",
-        time: "6.25rem",
+        logo: "2em",
+        time: "6.25em",
       },
       boxShadow: {
         light: "-50px -50px 100px 0 rgba(22, 25, 50, 0.5), 50px 50px 100px 0 rgba(215, 224, 255, 0.1)",

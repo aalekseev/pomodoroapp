@@ -1,0 +1,19 @@
+name: End-to-end tests
+on:
+  push:
+    # test every branch
+    branches: "*"
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: cypress-io/github-action@v2
+        with:
+          start: npm run dev
+          browser: chrome
+          headless: true
+          # quote the url to be safe against YML parsing surprises
+          wait-on: "http://localhost:8080"
