@@ -1,8 +1,7 @@
-// Settings
-// Durations Names
+// Durations
 const POMODORO = "pomodoro";
-const SHORT_BREAK = "short break";
-const LONG_BREAK = "long break";
+const SHORT_BREAK = "short-break";
+const LONG_BREAK = "long-break";
 // Fonts
 const KUMBH_SANS = "kumbh-sans";
 const ROBOTO_SERIF = "roboto-slab";
@@ -31,7 +30,7 @@ const app = () => ({
   start() {
     this.runningTimer = setInterval(() => {
       if (this.duration <= 0) {
-        this.reset();
+        this.resetTimers();
         return;
       }
       this.duration -= 1;
@@ -41,14 +40,14 @@ const app = () => ({
     clearInterval(this.runningTimer);
     this.runningTimer = null;
   },
-  reset() {
+  resetTimers() {
     clearInterval(this.runningTimer);
     this.runningTimer = null;
     this.duration = minutesToSeconds(this.settings.durations[this.activeAction]);
   },
   setAction(action) {
     this.activeAction = action;
-    this.reset();
+    this.resetTimers();
   },
 
   settings: {
@@ -56,11 +55,27 @@ const app = () => ({
     font: KUMBH_SANS,
     color: RED,
     durations: { ...DEFAULT_DURATIONS },
+    _raw: { durations: { ...DEFAULT_DURATIONS }, color: RED, font: KUMBH_SANS },
+    _errors: {
+      [POMODORO]: false,
+      [SHORT_BREAK]: false,
+      [LONG_BREAK]: false,
+    },
+  },
+
+  validate(value, action) {
+    if (value > 59 || value < 1 || value % 1 !== 0) {
+      this.settings._errors[action] = true;
+    } else {
+      this.settings._errors[action] = false;
+      this.settings._raw.durations[action] = value;
+    }
   },
 });
 
 // Shamelessly copied from here
 // https://stackoverflow.com/questions/19700283/how-to-convert-time-milliseconds-to-hours-min-sec-format-in-javascript#19700358
+// Note: Does not support hours!
 const secondsToMinutes = (duration) => {
   let seconds = parseInt(duration % 60, 10);
   let minutes = parseInt((duration / 60) % 60, 10);
@@ -81,13 +96,5 @@ const durationToPercents = (currentDuration, fullDuration) => {
   const singlePercent = fullDurationSeconds / 100;
   const durationDifference = fullDurationSeconds - currentDuration;
   // Subtracting from 100% to get reversed percentage
-  console.log(
-    fullDuration,
-    fullDurationSeconds,
-    currentDuration,
-    singlePercent,
-    durationDifference,
-    durationDifference / singlePercent
-  );
   return 100 - durationDifference / singlePercent;
 };
