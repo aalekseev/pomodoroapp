@@ -13,7 +13,8 @@ module.exports = {
       lightblue: "#D7E0FF",
       violet: "#D881F8",
       cyan: "#70F3F8",
-      red: "#F87070",
+      red: "hsl(0, 91%, 71%)",
+      "red-300": "hsl(0, 91%, 81%)",
     },
     extend: {
       transitionProperty: {
@@ -44,6 +45,9 @@ module.exports = {
       boxShadow: ["active"],
       fontWeight: ["active"],
       ringWidth: ["hover"],
+      backgroundColor: ["disabled"],
+      textColor: ["disabled"],
+      cursor: ["disabled"],
     },
   },
   plugins: [],

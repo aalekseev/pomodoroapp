@@ -32,12 +32,12 @@ describe("Settings Flow", () => {
       cy.log(`Font ${font}`);
       cy.get("[data-qa=open-settings-btn]").click();
       cy.get(`[data-qa=font-${font}-btn]`).click();
-      cy.get("[data-qa=close-settings-btn]").click();
+      cy.get("[data-qa=apply-btn]").click();
       const fontClass = `font-${font}`;
       cy.get("[data-qa=action-pomodoro]").should("have.class", fontClass);
       cy.get("[data-qa=action-short-break]").should("have.class", fontClass);
       cy.get("[data-qa=action-long-break]").should("have.class", fontClass);
-      cy.get("[data-qa=time").should("have.class", fontClass);
+      cy.get("[data-qa=time]").should("have.class", fontClass);
       cy.get("[data-qa=timer-state]").should("have.class", fontClass);
     });
   });
@@ -48,7 +48,7 @@ describe("Settings Flow", () => {
       cy.log(`Color ${color}`);
       cy.get("[data-qa=open-settings-btn]").click();
       cy.get(`[data-qa=color-${color}-btn]`).click();
-      cy.get("[data-qa=close-settings-btn]").click();
+      cy.get("[data-qa=apply-btn]").click();
       cy.get("[data-qa=action-pomodoro]").should("have.class", `bg-${color}`);
       cy.get("[data-qa=progress").should("have.class", `text-${color}`);
     });
@@ -60,8 +60,40 @@ describe("Settings Flow", () => {
       cy.log(`Duration ${duration}`);
       cy.get("[data-qa=open-settings-btn]").click();
       cy.get(`[data-qa=${duration}-input]`).clear().type(8);
-      cy.get("[data-qa=close-settings-btn]").click();
-      cy.get("[data-qa=time").should("contain", "08:00");
+      cy.get("[data-qa=apply-btn]").click();
+      cy.get("[data-qa=time]").should("contain", "08:00");
     });
+  });
+
+  it("User can get validation feedback when changing time duration", () => {
+    cy.get("[data-qa=open-settings-btn]").click();
+    cy.get("[data-qa=short-break-input]").clear().type(61);
+    cy.get("[data-qa=duration-error]").should("be.visible");
+    cy.get("[data-qa=apply-btn]").should("have.attr", "disabled");
+    // When we click apply - nothing changes
+    cy.get("[data-qa=apply-btn]").click({ force: true });
+    cy.get("[data-qa=short-break-input]").should("be.visible");
+    cy.get("[data-qa=close-settings-btn]").click();
+    // Timer contains default value, nothing was applied
+    cy.get("[data-qa=action-short-break]").click();
+    cy.get("[data-qa=time]").should("contain", "05:00");
+    // Let's open settings again
+    cy.get("[data-qa=open-settings-btn]").click();
+    // Trying another invalid value
+    cy.get("[data-qa=short-break-input]").clear().type(0);
+    cy.get("[data-qa=duration-error]").should("be.visible");
+    // Typing valid number
+    cy.get("[data-qa=short-break-input]").clear().type(10);
+    cy.get("[data-qa=duration-error]").should("not.be.visible");
+    // Typing another invalid value
+    cy.get("[data-qa=short-break-input]").clear().type(0.333);
+    cy.get("[data-qa=duration-error]").should("be.visible");
+    // Typing final valid value
+    cy.get("[data-qa=short-break-input]").clear().type(6);
+    cy.get("[data-qa=duration-error]").should("not.be.visible");
+    cy.get("[data-qa=apply-btn]").should("not.have.attr", "disabled");
+    cy.get("[data-qa=apply-btn]").click();
+    cy.get("[data-qa=action-short-break]").click();
+    cy.get("[data-qa=time]").should("contain", "06:00");
   });
 });

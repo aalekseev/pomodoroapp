@@ -8,7 +8,7 @@
     "build": "snowpack build",
     "test": "cypress run",
     "cy:open": "cypress open",
-    "format": "prettier --write package.json README.md src/**/*.{js,html,css} cypress/*"
+    "format": "prettier --write ."
   },
   "keywords": [
     "pomodoro",

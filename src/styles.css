@@ -24,17 +24,22 @@
     src: url(/fonts/SpaceMono-Bold.ttf) format("ttf");
   }
   body {
-    @apply bg-darkestblue;
+    @apply bg-darkestblue font-kumbh-sans;
+  }
+  article button {
+    @apply focus:outline-none focus:ring-4 focus:ring-lightblue focus:ring-opacity-25;
   }
   h1,
   h2,
-  h4,
-  p,
+  h3,
   button {
     @apply text-lightblue;
   }
   aside h1,
   aside h2 {
     @apply text-darkestblue;
+  }
+  [x-cloak] {
+    display: none;
   }
 }

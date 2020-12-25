@@ -6,11 +6,11 @@ describe("Timer Flow", () => {
   it("User can switch between different timers", () => {
     cy.get("[data-qa=actions-wrapper]").should("be.visible");
     cy.get("[data-qa=time]").should("contain", "25:00");
-    cy.get("[data-qa=action-short-break").click();
+    cy.get("[data-qa=action-short-break]").click();
     cy.get("[data-qa=time]").should("contain", "5:00");
-    cy.get("[data-qa=action-long-break").click();
+    cy.get("[data-qa=action-long-break]").click();
     cy.get("[data-qa=time]").should("contain", "15:00");
-    cy.get("[data-qa=action-pomodoro").click();
+    cy.get("[data-qa=action-pomodoro]").click();
     cy.get("[data-qa=time]").should("contain", "25:00");
   });
 
