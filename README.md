@@ -37,6 +37,30 @@ Main Features:
 
 ## What I Learned
 
+### Mobile Browsers and 100VH
+
+That 100vh on mobile browsers is painful experience as of today,
+they don't respect this property and page looks cropped when address
+bar is visible. With this project it was super critical to be able to show settings
+button on one screen without cropping (Firefox) or scrolling extra pixels (Chrome).
+
+I found a great article [CSS Tricks: The trick to viewport units on mobile ](https://css-tricks.com/the-trick-to-viewport-units-on-mobile/)
+and used it with AlpineJS, thought without conversion to VH units, since it was enough for
+my use-case.
+
+### SVG Progress Bar
+
+One of the challenging parts of this project is big button with
+radial progress bar and text on top of it. I thought that with CSS building
+it might be tricky and we as developers have a great SVG technology.
+
+ATM I am not entirely happy with the result, moving between stops
+are a bit chunky even with the transitions. And there are a few great
+demos/articles that helped me to build this functionality
+
+- [CodePen Demo using SVG Path](https://codepen.io/web-tiki/pen/qEGvMN)
+- [CSS-Tricks article with using SVG Circle](https://css-tricks.com/building-progress-ring-quickly)
+
 ### Tailwind
 
 I was initially skeptical about the utility-based framework, but
@@ -78,6 +102,14 @@ AlpineJS is kinda not designed to build applications, but rather to sparkle a bi
 interactivity to the static pages. We add this functionality by creating kinda small components,
 and each component can have a scoped state if you use `x-data` In the case of this project, I thought that it makes sense
 to have
+
+#### Forms
+
+It is expected that this small framework could not include forms functionality, but here is a few things:
+first, there is awesome [x-model](https://github.com/alpinejs/alpine/#x-model) property that let's you sync
+both ways data in the component and form input. With validation however everything starting to be messy really quickly.
+For this project it was fine to use a bit of hardcode to make 3 identical number inputs work and work with validation,
+however for bigger form I would add extra library/use different framework.
 
 ## Development
 
