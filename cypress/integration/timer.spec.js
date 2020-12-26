@@ -1,6 +1,17 @@
+// Well this sucks, see https://github.com/cypress-io/cypress/issues/9113
+const disableServiceWorker = {
+  onBeforeLoad(window) {
+    delete window.navigator.__proto__.serviceWorker;
+  },
+};
+
+Cypress.on("window:before:load", (win) => {
+  win.indexedDB.deleteDatabase("keyval-store");
+});
+
 describe("Timer Flow", () => {
   beforeEach(() => {
-    cy.visit("/");
+    cy.visit("/", disableServiceWorker);
   });
 
   it("User can switch between different timers", () => {

@@ -78,9 +78,13 @@ const app = () => ({
         }
       });
     });
-    if (!this.timerDuration) {
-      this.timerDuration = minutesToSeconds(this.settings.durations[this.activeAction]);
-    }
+    idbKeyval.get("timerDuration").then((timerDuration) => {
+      if (timerDuration) {
+        this.timerDuration = timerDuration;
+      } else {
+        this.timerDuration = minutesToSeconds(this.settings.durations[this.activeAction]);
+      }
+    });
     // This will trigger recalculating of the page heigh
     // after Alpine finished component initialization
     window.dispatchEvent(new Event("resize"));
@@ -128,5 +132,5 @@ const app = () => ({
 
 if ("serviceWorker" in navigator) {
   // register service worker
-  navigator.serviceWorker.register("/service-worker.js", { scope: "./" });
+  navigator.serviceWorker.register("/service-worker.js");
 }
