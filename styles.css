@@ -660,6 +660,10 @@ aside h1, aside h2 {
   cursor: default;
 }
 
+.block {
+  display: block;
+}
+
 .flex {
   display: flex;
 }
@@ -961,6 +965,11 @@ aside h1, aside h2 {
 .text-darkestblue {
   --tw-text-opacity: 1;
   color: rgba(22, 25, 50, var(--tw-text-opacity));
+}
+
+.text-lightblue {
+  --tw-text-opacity: 1;
+  color: rgba(215, 224, 255, var(--tw-text-opacity));
 }
 
 .text-violet {
