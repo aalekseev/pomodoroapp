@@ -3,18 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1E213F" />
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <script src="https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js"></script>
     <!-- There is no ESM module for alpinejs yet, promised to be released in v3 -->
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <title>Pomodoro App</title>
   </head>
   <body>
     <article
       class="flex flex-col justify-between h-full p-2 sm:py-8"
       x-data="app()"
       x-cloak
-      x-init="() => {window.dispatchEvent(new Event('resize'))}"
+      x-init="init"
       x-on:keydown.escape="settings.open = false"
-      x-on:resize.window="document.querySelector('body').style.setProperty('height', window.innerHeight + 'px')"
+      x-on:online.window="offline = false"
+      x-on:offline.window="offline = true"
+      x-on:load.window="offline = !navigator.online"
     >
       <div>
         <h1 class="font-bold text-center text-logo">pomodoro</h1>
@@ -67,7 +73,7 @@
               'text-cyan': settings.color === CYAN,
               'text-violet': settings.color === VIOLET,
             }"
-            x-bind:stroke-dashoffset="276.5 - durationToPercents(duration, settings.durations[activeAction]) / 100 * 276.5"
+            x-bind:stroke-dashoffset="276.5 - durationToPercents(timerDuration, settings.durations[activeAction]) / 100 * 276.5"
           />
           <text
             class="fill-current text-lighblue"
@@ -77,7 +83,7 @@
             x="50%"
             y="50%"
             dy=".3em"
-            x-text="secondsToMinutes(duration)"
+            x-text="secondsToMinutes(timerDuration)"
             x-bind:class="{
               'font-kumbh-sans font-bold': settings.font === KUMBH_SANS,
               'font-roboto-slab font-bold': settings.font === ROBOTO_SERIF,
@@ -257,13 +263,16 @@
               data-qa="apply-btn"
               type="button"
               x-bind:disabled="Object.values(settings._errors).some(Boolean)"
-              x-on:click="settings = JSON.parse(JSON.stringify({...settings, ...settings._raw})); settings.open = false; resetTimers();"
+              x-on:click="applySettings(); settings.open = false; resetTimers();"
             >
               Apply
             </button>
           </footer>
         </div>
       </aside>
+      <footer class="text-xs text-center text-lightblue">
+        Pomodoro App 2020, v1.0.1<span x-show="offline">, status: offline</span>
+      </footer>
     </article>
 
     <script src="./index.js"></script>
