@@ -10,7 +10,7 @@ const PRECACHE_URLS = [
   "styles.css",
   "index.js",
   "offline.html",
-  "favicon.ico",
+  "/favicon.ico",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/fonts/KumbhSans-Bold.ttf",
