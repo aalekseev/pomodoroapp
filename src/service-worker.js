@@ -10,14 +10,14 @@ const PRECACHE_URLS = [
   "styles.css",
   "index.js",
   "offline.html",
-  "/favicon.ico",
-  "/icons/icon-192.png",
-  "/icons/icon-512.png",
-  "/fonts/KumbhSans-Bold.ttf",
-  "/fonts/RobotoSlab-Bold.ttf",
-  "/fonts/SpaceMono-Bold.ttf",
-  "/fonts/SpaceMono-Regular.ttf",
-  "/manifest.webmanifest",
+  "favicon.ico",
+  "icons/icon-192.png",
+  "icons/icon-512.png",
+  "fonts/KumbhSans-Bold.ttf",
+  "fonts/RobotoSlab-Bold.ttf",
+  "fonts/SpaceMono-Bold.ttf",
+  "fonts/SpaceMono-Regular.ttf",
+  "manifest.webmanifest",
 ];
 const HOSTNAME_WHITELIST = [self.location.hostname, "cdn.jsdelivr.net"];
 
