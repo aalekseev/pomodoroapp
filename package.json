@@ -1,6 +1,6 @@
 {
   "name": "pomodoro-tailwind-alpine",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "Pomodoro timer built with tailwind and alpinejs",
   "scripts": {

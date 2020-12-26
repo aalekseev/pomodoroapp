@@ -1,10 +1,24 @@
 // Names of the two caches used in this version of the service worker.
 // Change to v2, etc. when you update any of the local resources, which will
 // in turn trigger the install event again.
-const PRECACHE = "pomodoro-app-v0.1.2";
+const PRECACHE = "pomodoro-app-v0.1.3";
 const RUNTIME = "runtime";
 
-const PRECACHE_URLS = ["./", "index.html", "styles.css", "index.js", "offline.html", "/icons", "/fonts"];
+const PRECACHE_URLS = [
+  "./",
+  "index.html",
+  "styles.css",
+  "index.js",
+  "offline.html",
+  "favicon.ico",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
+  "/fonts/KumbhSans-Bold.ttf",
+  "/fonts/RobotoSlab-Bold.ttf",
+  "/fonts/SpaceMono-Bold.ttf",
+  "/fonts/SpaceMono-Regular.ttf",
+  "/manifest.webmanifest",
+];
 const HOSTNAME_WHITELIST = [self.location.hostname, "cdn.jsdelivr.net"];
 
 // The install handler takes care of precaching the resources we always need.
